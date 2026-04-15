@@ -1,0 +1,496 @@
+<!DOCTYPE html><html><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;"><meta http-equiv="x-dns-prefetch-control" content="off"><script src="https://puc.poecdn.net/authenticated_preview_page/standard.3ef2c256959faf5a756d.js"></script>
+    <meta charset="utf-8">
+    <title>Poe</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://puc.poecdn.net/authenticated_preview_page/disableWebRTC.9710cebe07429a9e8e06.js"></script><meta name="x-poe-allow-downloads" content="true"><meta name="x-poe-datastore-behavior" content="disabled"><script src="https://puc.poecdn.net/authenticated_preview_page/tw.50ec1b0612bf5b0c30a5.js"></script><script src="https://puc.poecdn.net/authenticated_preview_page/deps.faccd16000d314dc16d5.js"></script><script src="https://puc.poecdn.net/authenticated_preview_page/exports.b0f0f482cdeb5302b0b9.js"></script><script src="https://puc.poecdn.net/authenticated_preview_page/renderer.75c73ae6b4235f62945a.js"></script><script>Object.defineProperty(exports, "__esModule", {value: true}); function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }var _react = require('react');
+var _framermotion = require('framer-motion');
+var _lucidereact = require('lucide-react');
+
+const NAVY = "#1a2142";
+const NAVY_LIGHT = "#1e2a4a";
+const NAVY_CARD = "#243058";
+const GOLD = "#c9a84c";
+
+const REVENUE_BANDS = [
+  { label: "Less than ₹20 Lac", midpointLac: 12 },
+  { label: "₹20 Lac – ₹50 Lac", midpointLac: 35 },
+  { label: "₹50 Lac – ₹1 Crore", midpointLac: 75 },
+  { label: "₹1 Crore – ₹3 Crore", midpointLac: 200 },
+  { label: "More than ₹3 Crore", midpointLac: 400 },
+];
+
+const PROFESSION_EXAMPLES =
+  "Dentist · Audiologist · Physiotherapist · ENT Specialist · Ophthalmologist · Optometrist · Psychologist · Veterinarian · Lawyer · Chartered Accountant (Practice) · Company Secretary · Architect · Interior Designer · Management Consultant · Financial Advisor · Executive Coach · Nutritionist · Speech Therapist · Fitness Professional · Occupational Therapist";
+
+const QUESTIONS = [
+  {
+    id: "q1",
+    category: "Practice Profile",
+    question: "What is your approximate annual revenue from your independent practice?",
+    subtitle: "Include all professional income — consultations, retainers, packages, and ancillary services.",
+    isRevenueBand: true,
+    options: REVENUE_BANDS.map((b, i) => ({ label: b.label, score: 0, bandIndex: i })),
+    finding: null,
+  },
+  {
+    id: "q2",
+    category: "Capacity Utilisation",
+    question: "What percentage of your available appointment slots or billable hours are filled on a typical week?",
+    subtitle: "Count only appointments or hours that resulted in actual billing.",
+    options: [
+      { label: "More than 85% — consistently full", score: 0 },
+      { label: "70% – 85% — mostly full", score: 1 },
+      { label: "50% – 70% — noticeable gaps", score: 2 },
+      { label: "Below 50%, or I have never measured this", score: 3 },
+    ],
+    finding: "Capacity leakage: A significant portion of your billable time is going unfilled. Closing this gap through a structured recall and waitlist system — without adding a single new client — represents a direct and recoverable revenue increase.",
+  },
+  {
+    id: "q3",
+    category: "Fee Architecture",
+    question: "When did you last formally revise your consultation fee or service rate?",
+    subtitle: "'Formally' means a deliberate decision — not adjusting for one specific client or project.",
+    options: [
+      { label: "Within the last 12 months", score: 0 },
+      { label: "1 to 2 years ago", score: 1 },
+      { label: "2 to 3 years ago", score: 2 },
+      { label: "More than 3 years ago, or I have never formally revised it", score: 3 },
+    ],
+    finding: "Fee staleness: Your consultation rate is likely falling behind your rising costs and your growing professional seniority. Every year without a deliberate fee revision, your real earning power declines — even if revenue appears stable.",
+  },
+  {
+    id: "q4",
+    category: "No-Show & Cancellation Loss",
+    question: "How many appointments or billable sessions are lost monthly to late cancellations, no-shows, or unbilled work?",
+    subtitle: "Include any session that was booked but did not generate revenue.",
+    options: [
+      { label: "Fewer than 2 per month — I have systems in place", score: 0 },
+      { label: "2 to 4 per month — occasional but manageable", score: 1 },
+      { label: "5 to 8 per month — a recurring problem", score: 2 },
+      { label: "More than 8, or I have no system to track this", score: 3 },
+    ],
+    finding: "Cancellation leakage: You are losing meaningful revenue every month to appointments that don't convert — with no system to recover or prevent the loss. Without a confirmation protocol, cancellation policy, and waitlist management, this number repeats indefinitely.",
+  },
+  {
+    id: "q5",
+    category: "Client Concentration",
+    question: "Does a small group of clients, patients, or accounts (corporate retainers, key referrers) generate a disproportionate share of your revenue?",
+    subtitle: "Think about what would happen if your single largest referral source or client stopped.",
+    options: [
+      { label: "Revenue is broadly distributed — no single dependency", score: 0 },
+      { label: "Slightly concentrated but not a significant risk", score: 1 },
+      { label: "1 to 3 sources account for 40%+ of revenue", score: 2 },
+      { label: "Losing one relationship would materially hurt annual revenue", score: 3 },
+    ],
+    finding: "Referral or client concentration risk: Heavy dependence on a small number of referral sources or anchor clients creates structural fragility. When that relationship shifts — through no fault of your own — there is no commercial system to absorb or replace it.",
+  },
+  {
+    id: "q6",
+    category: "Recall & Referral Systems",
+    question: "Do you have a structured system to recall lapsed clients/patients and generate referrals?",
+    subtitle: "A 'system' means an active, repeatable process — not simply hoping clients return.",
+    options: [
+      { label: "Yes — with follow-up protocols and some automation", score: 0 },
+      { label: "Informal — I do outreach occasionally but inconsistently", score: 1 },
+      { label: "No formal system — clients return when they choose to", score: 2 },
+      { label: "No system and recall almost never happens", score: 3 },
+    ],
+    finding: "Recall and referral gap: Without a structured recall system, a significant portion of your existing client or patient base quietly drifts away — taking with them repeat revenue that costs nothing to generate. This is among the highest-ROI fixes available to any solo professional.",
+  },
+  {
+    id: "q7",
+    category: "Premium Service Structure",
+    question: "Do you offer tiered pricing, premium packages, or bundled services at higher fee points?",
+    subtitle: "This means structured offerings beyond a single flat consultation or hourly rate.",
+    options: [
+      { label: "Yes — multiple tiers that generate meaningful revenue", score: 0 },
+      { label: "Some bundling exists but not systematically priced", score: 1 },
+      { label: "Mostly single-transaction or hourly pricing only", score: 2 },
+      { label: "Everything is charged at one flat rate with no premium tier", score: 3 },
+    ],
+    finding: "Premium revenue uncaptured: A flat-rate pricing structure leaves significant revenue uncaptured from clients or patients who would willingly pay more for expedited access, comprehensive packages, or premium outcomes. This is one of the fastest-impact fee interventions available.",
+  },
+  {
+    id: "q8",
+    category: "Non-Billable Time",
+    question: "What percentage of your working day is spent on non-billable work — administration, billing, follow-up, and coordination?",
+    subtitle: "Be honest. Most professionals significantly underestimate this.",
+    options: [
+      { label: "Less than 15% — well-delegated or automated", score: 0 },
+      { label: "15% – 25% — manageable but noticeable", score: 1 },
+      { label: "25% – 40% — meaningfully reducing my earning capacity", score: 2 },
+      { label: "More than 40%, or I have not tracked this", score: 3 },
+    ],
+    finding: "Administrative revenue drag: High non-billable time directly reduces your effective earning capacity. Every hour spent on administration is an hour not spent billing. At your fee rate, each percentage point of admin overhead has a quantifiable annual cost.",
+  },
+  {
+    id: "q9",
+    category: "Revenue Independence",
+    question: "If you were personally unavailable for 2 full weeks, what would happen to your practice's revenue?",
+    subtitle: "This measures how dependent your revenue is on your personal, physical presence.",
+    options: [
+      { label: "Revenue would continue — I have a team or systems in place", score: 0 },
+      { label: "Minor impact — most things would hold for 2 weeks", score: 1 },
+      { label: "Significant drop — most revenue depends on my presence", score: 2 },
+      { label: "Complete stop — I am the only revenue-generating mechanism", score: 3 },
+    ],
+    finding: "Personal revenue dependency: Your practice is currently structured as a highly skilled personal job rather than a business. This caps your income ceiling at your physical availability and gives the practice very limited financial value beyond your personal presence.",
+  },
+];
+
+function formatMoney(lac) {
+  if (lac >= 100) return `₹${(lac / 100).toFixed(1)} Cr`;
+  if (lac >= 1) return `₹${Math.round(lac)} Lac`;
+  return `₹${Math.round(lac * 100)}K`;
+}
+
+const BOOKING_URL = "https://calendar.app.google/LWEzfQoLqP42ZzqL8";
+
+ function SolopreneurScorecard() {
+  const [screen, setScreen] = _react.useState.call(void 0, "intro");
+  const [currentQ, setCurrentQ] = _react.useState.call(void 0, 0);
+  const [answers, setAnswers] = _react.useState.call(void 0, Array(QUESTIONS.length).fill(null));
+  const [selectedIdx, setSelectedIdx] = _react.useState.call(void 0, null);
+  const [dir, setDir] = _react.useState.call(void 0, 1);
+
+  const total = QUESTIONS.length;
+
+  const handleSelect = (optIdx) => {
+    setSelectedIdx(optIdx);
+    const opt = QUESTIONS[currentQ].options[optIdx];
+    const updated = [...answers];
+    updated[currentQ] = {
+      optionIndex: optIdx,
+      score: opt.score,
+      bandIndex: opt.bandIndex !== undefined ? opt.bandIndex : null,
+      finding: QUESTIONS[currentQ].finding,
+      category: QUESTIONS[currentQ].category,
+    };
+    setAnswers(updated);
+
+    setTimeout(() => {
+      setSelectedIdx(null);
+      if (currentQ < total - 1) {
+        setDir(1);
+        setCurrentQ((q) => q + 1);
+      } else {
+        setScreen("results");
+      }
+    }, 320);
+  };
+
+  const handleBack = () => {
+    if (currentQ > 0) {
+      setDir(-1);
+      setCurrentQ((q) => q - 1);
+    }
+  };
+
+  const getResults = () => {
+    const bandIdx = _nullishCoalesce(_optionalChain([answers, 'access', _ => _[0], 'optionalAccess', _2 => _2.bandIndex]), () => ( 2));
+    const midpoint = REVENUE_BANDS[bandIdx].midpointLac;
+    const score = answers.slice(1).reduce((s, a) => s + (a ? a.score : 0), 0);
+
+    let band, label, leakLow, leakHigh, color, borderColor, bgColor, message;
+    if (score <= 8) {
+      band = "LOW RISK"; label = "Contained Leak Signals";
+      leakLow = midpoint * 0.05; leakHigh = midpoint * 0.10;
+      color = "#22c55e"; borderColor = "#16a34a"; bgColor = "rgba(34,197,94,0.1)";
+      message = "Your practice shows relatively contained revenue leak signals. Even so, solo professionals typically leave 5–10% of potential income uncaptured. A free diagnostic call will confirm this — or surface revenue that simply hasn't been measured yet.";
+    } else if (score <= 15) {
+      band = "MODERATE RISK"; label = "Significant Leaks Likely";
+      leakLow = midpoint * 0.10; leakHigh = midpoint * 0.20;
+      color = "#f59e0b"; borderColor = "#d97706"; bgColor = "rgba(245,158,11,0.1)";
+      message = "Multiple addressable revenue leaks detected across your practice. These are occurring monthly — through underpricing, capacity gaps, and absent recall systems. A diagnostic audit will quantify them precisely and identify the fastest fixes.";
+    } else {
+      band = "HIGH RISK"; label = "Urgent Audit Recommended";
+      leakLow = midpoint * 0.20; leakHigh = midpoint * 0.35;
+      color = "#ef4444"; borderColor = "#dc2626"; bgColor = "rgba(239,68,68,0.1)";
+      message = "Significant, simultaneous revenue leaks detected across fee structure, capacity utilisation, recall systems, and practice dependency. A large portion of your potential income is being left uncaptured. A diagnostic audit is strongly recommended.";
+    }
+
+    const findings = answers.slice(1)
+      .filter((a) => a && a.score >= 2 && a.finding)
+      .map((a) => ({ finding: a.finding, category: a.category }))
+      .slice(0, 4);
+
+    return { score, maxScore: 24, band, label, leakLow, leakHigh, color, borderColor, bgColor, message, findings };
+  };
+
+  const results = screen === "results" ? getResults() : null;
+
+  return (
+    React.createElement('div', { className: "min-h-screen flex flex-col"  , style: { background: NAVY, fontFamily: "'Segoe UI', system-ui, sans-serif" },}
+      /* Header */
+      , React.createElement('div', { className: "px-5 py-3 flex items-center justify-between border-b"     , style: { background: NAVY_LIGHT, borderColor: "rgba(201,168,76,0.2)" },}
+        , React.createElement('div', null
+          , React.createElement('div', { className: "text-xs font-bold tracking-widest uppercase"   , style: { color: GOLD },}, "KARMA NIYATI" )
+          , React.createElement('div', { className: "text-white text-xs opacity-60"  ,}, "AI Assisted Consulting · Brijraj Desai"     )
+        )
+        , React.createElement('div', { className: "text-right",}
+          , React.createElement('div', { className: "text-xs font-semibold text-white opacity-70"   ,}, "Revenue Leak Scorecard"  )
+          , React.createElement('div', { className: "text-xs font-bold" , style: { color: GOLD },}, "Independent Professional" )
+        )
+      )
+
+      /* Body */
+      , React.createElement('div', { className: "flex-1 flex items-start justify-center p-5 pt-6"     ,}
+        , React.createElement('div', { className: "w-full max-w-lg" ,}
+          , React.createElement(_framermotion.AnimatePresence, { mode: "wait",}
+            /* INTRO SCREEN */
+            , screen === "intro" && (
+              React.createElement(_framermotion.motion.div, { key: "intro", initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -16 }, transition: { duration: 0.4 },}
+                , React.createElement('div', { className: "text-center mb-5" ,}
+                  , React.createElement('div', { className: "inline-block px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-4"        , style: { background: "rgba(201,168,76,0.15)", color: GOLD, border: `1px solid ${GOLD}` },}, "FREE ASSESSMENT · 5 MINUTES"
+
+                  )
+                  , React.createElement('h1', { className: "text-2xl font-bold text-white mb-2 leading-tight"    ,}, "Revenue Leak Scorecard"  )
+                  , React.createElement('p', { className: "font-semibold text-base mb-3"  , style: { color: GOLD },}, "Independent Professional Practice"  )
+                  , React.createElement('p', { className: "text-gray-300 text-sm leading-relaxed"  ,}, "9 questions. Find out how much revenue your practice is leaving uncaptured — and exactly why."
+
+                  )
+                )
+
+                /* Profession list */
+                , React.createElement('div', { className: "rounded-xl p-4 mb-4"  , style: { background: "rgba(201,168,76,0.07)", border: `1px solid rgba(201,168,76,0.2)` },}
+                  , React.createElement('p', { className: "text-xs font-bold uppercase tracking-widest mb-2"    , style: { color: GOLD },}, "Designed for" )
+                  , React.createElement('p', { className: "text-gray-400 text-xs leading-relaxed"  ,}, PROFESSION_EXAMPLES)
+                )
+
+                , React.createElement('div', { className: "rounded-xl p-5 mb-5"  , style: { background: NAVY_CARD, border: `1px solid rgba(201,168,76,0.2)` },}
+                  , React.createElement('p', { className: "text-xs font-bold uppercase tracking-widest mb-3"    , style: { color: GOLD },}, "This scorecard analyses"  )
+                  , [
+                    ["Fee Architecture", "Is your rate keeping pace with your costs and seniority?"],
+                    ["Capacity Utilisation", "How much billable time is going unfilled each week?"],
+                    ["Cancellation & No-Show Loss", "How much revenue walks out monthly without a system to stop it?"],
+                    ["Recall & Referral Systems", "Are lapsed clients being recovered, or silently lost?"],
+                    ["Revenue Independence", "What happens to income if you personally step away?"],
+                  ].map(([title, desc], i) => (
+                    React.createElement('div', { key: i, className: "flex items-start gap-3 mb-3 last:mb-0"    ,}
+                      , React.createElement('div', { className: "w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5 text-xs font-bold"         , style: { background: "rgba(201,168,76,0.2)", color: GOLD },}
+                        , i + 1
+                      )
+                      , React.createElement('div', null
+                        , React.createElement('div', { className: "text-white text-xs font-semibold"  ,}, title)
+                        , React.createElement('div', { className: "text-gray-400 text-xs" ,}, desc)
+                      )
+                    )
+                  ))
+                )
+
+                , React.createElement('div', { className: "rounded-xl p-4 mb-5"  , style: { background: NAVY_LIGHT, border: "1px solid rgba(255,255,255,0.06)" },}
+                  , React.createElement('p', { className: "text-xs text-gray-300 leading-relaxed"  ,}
+                    , React.createElement('span', { className: "font-semibold", style: { color: GOLD },}, "Who is this for?"   ), " Independent professionals who own or run their own practice, firm, or consultancy. Can be completed by the practitioner directly or by their Chartered Accountant as part of an annual practice review."
+                  )
+                )
+
+                , React.createElement('button', {
+                  onClick: () => setScreen("questions"),
+                  className: "w-full py-4 rounded-xl text-base font-bold transition-all duration-200 hover:opacity-90 active:scale-95"        ,
+                  style: { background: GOLD, color: NAVY },}
+, "Start Assessment →"
+
+                )
+                , React.createElement('p', { className: "text-center text-gray-500 text-xs mt-3"   ,}, "No sign-up required · Results shown immediately"      )
+              )
+            )
+
+            /* QUESTION SCREEN */
+            , screen === "questions" && (
+              React.createElement(_framermotion.motion.div, {
+                key: `q-${currentQ}`,
+                initial: { opacity: 0, x: dir * 40 },
+                animate: { opacity: 1, x: 0 },
+                exit: { opacity: 0, x: dir * -40 },
+                transition: { duration: 0.28, ease: "easeOut" },}
+
+                /* Progress */
+                , React.createElement('div', { className: "mb-5",}
+                  , React.createElement('div', { className: "flex justify-between items-center mb-2"   ,}
+                    , React.createElement('span', { className: "text-xs text-gray-400" ,}, "Question " , currentQ + 1, " of "  , total)
+                    , React.createElement('span', { className: "text-xs font-bold uppercase tracking-wide"   , style: { color: GOLD },}, QUESTIONS[currentQ].category)
+                  )
+                  , React.createElement('div', { className: "h-1.5 rounded-full overflow-hidden"  , style: { background: "rgba(255,255,255,0.1)" },}
+                    , React.createElement(_framermotion.motion.div, {
+                      className: "h-full rounded-full" ,
+                      style: { background: GOLD },
+                      initial: { width: `${(currentQ / total) * 100}%` },
+                      animate: { width: `${((currentQ + 1) / total) * 100}%` },
+                      transition: { duration: 0.4 },}
+                    )
+                  )
+                )
+
+                /* Question text */
+                , React.createElement('div', { className: "mb-5",}
+                  , React.createElement('h2', { className: "text-xl font-bold text-white leading-snug mb-2"    ,}, QUESTIONS[currentQ].question)
+                  , QUESTIONS[currentQ].subtitle && (
+                    React.createElement('p', { className: "text-gray-400 text-sm leading-relaxed"  ,}, QUESTIONS[currentQ].subtitle)
+                  )
+                )
+
+                /* Options */
+                , React.createElement('div', { className: "space-y-3 mb-5" ,}
+                  , QUESTIONS[currentQ].options.map((opt, i) => {
+                    const isSaved = _optionalChain([answers, 'access', _3 => _3[currentQ], 'optionalAccess', _4 => _4.optionIndex]) === i;
+                    const isSelected = selectedIdx === i;
+                    const highlighted = isSelected || (selectedIdx === null && isSaved);
+                    return (
+                      React.createElement(_framermotion.motion.button, {
+                        key: i,
+                        onClick: () => handleSelect(i),
+                        whileTap: { scale: 0.98 },
+                        disabled: selectedIdx !== null,
+                        className: "w-full text-left p-4 rounded-xl border transition-all duration-200"      ,
+                        style: {
+                          background: highlighted ? "rgba(201,168,76,0.15)" : NAVY_CARD,
+                          borderColor: highlighted ? GOLD : "rgba(255,255,255,0.1)",
+                          color: highlighted ? "#fff" : "#cbd5e1",
+                        },}
+
+                        , React.createElement('div', { className: "flex items-center gap-3"  ,}
+                          , React.createElement('div', {
+                            className: "w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center"       ,
+                            style: { borderColor: highlighted ? GOLD : "rgba(255,255,255,0.25)", background: highlighted ? GOLD : "transparent" },}
+
+                            , highlighted && React.createElement('div', { className: "w-2 h-2 rounded-full"  , style: { background: NAVY },} )
+                          )
+                          , React.createElement('span', { className: "text-sm font-medium" ,}, opt.label)
+                        )
+                      )
+                    );
+                  })
+                )
+
+                /* Back */
+                , currentQ > 0 && (
+                  React.createElement('button', { onClick: handleBack, className: "flex items-center gap-1 text-gray-500 text-xs hover:text-gray-300 transition-colors"      ,}
+                    , React.createElement(_lucidereact.ArrowLeft, { size: 12,} ), " Back to previous question"
+                  )
+                )
+              )
+            )
+
+            /* RESULTS SCREEN */
+            , screen === "results" && results && (
+              React.createElement(_framermotion.motion.div, { key: "results", initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5 },}
+                /* Band badge */
+                , React.createElement('div', { className: "text-center mb-5" ,}
+                  , React.createElement(_framermotion.motion.div, {
+                    initial: { scale: 0.8, opacity: 0 },
+                    animate: { scale: 1, opacity: 1 },
+                    transition: { delay: 0.2, type: "spring", stiffness: 200 },
+                    className: "inline-block px-4 py-2 rounded-full text-sm font-bold uppercase tracking-widest mb-3"        ,
+                    style: { background: results.bgColor, color: results.color, border: `2px solid ${results.color}` },}
+
+                    , results.band
+                  )
+                  , React.createElement('h2', { className: "text-2xl font-bold text-white mb-1"   ,}, results.label)
+                  , React.createElement('p', { className: "text-gray-400 text-sm" ,}, "Score: " , results.score, " / "  , results.maxScore)
+                )
+
+                /* Leak estimate */
+                , React.createElement(_framermotion.motion.div, {
+                  initial: { opacity: 0, y: 10 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { delay: 0.35 },
+                  className: "rounded-xl p-5 mb-4 text-center"   ,
+                  style: { background: results.bgColor, border: `1px solid ${results.borderColor}` },}
+
+                  , React.createElement('p', { className: "text-xs font-bold uppercase tracking-widest mb-2"    , style: { color: results.color },}, "Estimated Annual Revenue Uncaptured"   )
+                  , React.createElement('p', { className: "text-3xl font-bold text-white mb-1"   ,}
+                    , formatMoney(results.leakLow), " – "  , formatMoney(results.leakHigh)
+                  )
+                  , React.createElement('p', { className: "text-xs text-gray-400 leading-relaxed"  ,}, "Illustrative estimate based on your revenue band and scorecard responses. Actual figure confirmed through diagnostic audit."
+
+                  )
+                )
+
+                /* Message */
+                , React.createElement(_framermotion.motion.div, {
+                  initial: { opacity: 0 },
+                  animate: { opacity: 1 },
+                  transition: { delay: 0.45 },
+                  className: "rounded-xl p-4 mb-4"  ,
+                  style: { background: NAVY_CARD, border: "1px solid rgba(255,255,255,0.08)" },}
+
+                  , React.createElement('p', { className: "text-gray-300 text-sm leading-relaxed"  ,}, results.message)
+                )
+
+                /* Findings */
+                , results.findings.length > 0 && (
+                  React.createElement(_framermotion.motion.div, {
+                    initial: { opacity: 0, y: 10 },
+                    animate: { opacity: 1, y: 0 },
+                    transition: { delay: 0.55 },
+                    className: "rounded-xl p-5 mb-5"  ,
+                    style: { background: NAVY_CARD, border: "1px solid rgba(255,255,255,0.08)" },}
+
+                    , React.createElement('p', { className: "text-xs font-bold uppercase tracking-widest mb-3"    , style: { color: GOLD },}, "Key Areas Flagged"  )
+                    , results.findings.map((f, i) => (
+                      React.createElement('div', { key: i, className: "flex items-start gap-3 mb-3 last:mb-0"    ,}
+                        , React.createElement('div', { className: "w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"    , style: { background: results.color },} )
+                        , React.createElement('div', null
+                          , React.createElement('div', { className: "text-xs font-bold text-white mb-0.5"   ,}, f.category)
+                          , React.createElement('div', { className: "text-xs text-gray-400 leading-relaxed"  ,}, f.finding)
+                        )
+                      )
+                    ))
+                  )
+                )
+
+                /* CTA */
+                , React.createElement(_framermotion.motion.div, { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.65 },}
+                  , React.createElement('a', {
+                    href: BOOKING_URL,
+                    target: "_blank",
+                    rel: "noopener noreferrer" ,
+                    className: "block w-full py-4 rounded-xl text-base font-bold text-center transition-all duration-200 hover:opacity-90 active:scale-95 mb-3"           ,
+                    style: { background: GOLD, color: NAVY },}
+
+                    , React.createElement(_lucidereact.Calendar, { size: 16, style: { display: "inline", marginRight: 8, verticalAlign: "middle" },} ), "Book Free 30-Min Revenue Leak Call"
+
+                  )
+                  , React.createElement('p', { className: "text-center text-xs text-gray-500 mb-5"   ,}, "No obligation · Free diagnostic call with Brijraj Desai"        )
+
+                  /* Contact strip */
+                  , React.createElement('div', { className: "rounded-xl p-4" , style: { background: NAVY_LIGHT, border: `1px solid rgba(201,168,76,0.15)` },}
+                    , React.createElement('p', { className: "text-xs font-bold uppercase tracking-widest mb-3 text-center"     , style: { color: GOLD },}, "Karma Niyati · AI Assisted Consulting"     )
+                    , React.createElement('div', { className: "flex flex-wrap justify-center gap-4"   ,}
+                      , React.createElement('a', { href: "tel:+917718871212", className: "flex items-center gap-1.5 text-gray-300 hover:text-white text-xs transition-colors"      ,}
+                        , React.createElement(_lucidereact.Phone, { size: 12, style: { color: GOLD },} ), " +91 77188 71212"
+                      )
+                      , React.createElement('a', { href: "mailto:karmaniyatibiz@gmail.com", className: "flex items-center gap-1.5 text-gray-300 hover:text-white text-xs transition-colors"      ,}
+                        , React.createElement(_lucidereact.Mail, { size: 12, style: { color: GOLD },} ), " karmaniyatibiz@gmail.com"
+                      )
+                      , React.createElement('a', { href: "https://karmaniyati.com", target: "_blank", rel: "noopener noreferrer" , className: "flex items-center gap-1.5 text-gray-300 hover:text-white text-xs transition-colors"      ,}
+                        , React.createElement(_lucidereact.Globe, { size: 12, style: { color: GOLD },} ), " karmaniyati.com"
+                      )
+                    )
+                  )
+                )
+
+                , React.createElement('button', {
+                  onClick: () => { setScreen("intro"); setCurrentQ(0); setAnswers(Array(QUESTIONS.length).fill(null)); setSelectedIdx(null); },
+                  className: "w-full mt-3 py-2 text-gray-500 text-xs hover:text-gray-300 transition-colors"      ,}
+, "Retake assessment"
+
+                )
+              )
+            )
+          )
+        )
+      )
+
+      /* Footer */
+      , React.createElement('div', { className: "px-5 py-3 text-center"  , style: { background: NAVY_LIGHT, borderTop: "1px solid rgba(255,255,255,0.06)" },}
+        , React.createElement('p', { className: "text-gray-600 text-xs" ,}, "© Karma Niyati · Find the Leak. Fix the System. Keep the Money."            )
+      )
+    )
+  );
+} exports.default = SolopreneurScorecard;
+</script></head>
+  <body>
+  
+
+<div id="preview-app"></div></body></html>
